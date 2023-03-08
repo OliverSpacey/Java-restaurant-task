@@ -1,0 +1,144 @@
+package resturant;
+import sheffield.*;
+
+public class Diner {
+
+    //:::::::::::::Required for Task 1
+
+    static Diner [] allTheDiners;
+
+    static void createPartyFor(String [] peoplesNames) {
+        //create new diner object for each person
+        allTheDiners = new Diner[(peoplesNames.length)];
+        for (int i=0; i<peoplesNames.length; i++){
+            allTheDiners[i] = new Diner(peoplesNames[i]);
+        }
+     }
+
+     static EasyWriter screen = new EasyWriter();
+
+     static void listAllTheDiners() {
+         screen.println("The diners are:");
+         for (int i=0; i<allTheDiners.length; i++){
+             screen.println(allTheDiners[i].theDinersName);
+         }
+     }
+
+     private String theDinersName;
+
+     private Diner (String called) {
+         //This is the constructor
+         theDinersName = called;
+         thingsOrderedByDiner = new Order[MAX_NUMBER_OF_THINGS_A_DINER_CAN_ORDER];
+     }
+
+     //:::::::::::::Additionally required for Task 2
+
+     static void takeEveryonesOrder()  {
+        for (int i=0; i<allTheDiners.length; i++){
+            allTheDiners[i].askForTheirOrder();
+        }
+     }
+
+     static final int MAX_NUMBER_OF_THINGS_A_DINER_CAN_ORDER=10;
+
+     Order[] thingsOrderedByDiner;
+
+     private void askForTheirOrder() {
+       screen.println("Time for "+theDinersName+" to order");
+       boolean orderState = true;
+       int a = 0;
+       while (orderState && a < MAX_NUMBER_OF_THINGS_A_DINER_CAN_ORDER){
+           Order orderDiner = Order.askForANewThingOrdered();
+           if (orderDiner != null){
+               thingsOrderedByDiner[a] = orderDiner;
+               a+=1;
+
+           }
+           else
+               orderState = false;
+       }
+       screen.println();
+    }
+
+    static void listEveryonesOrder() {
+        screen.println("The diners' order is");
+        for (int i=0; i<allTheDiners.length; i++){
+            allTheDiners[i].printOrder();
+        }
+        screen.println();
+    }
+
+   private void printOrder() {
+     screen.println(theDinersName);
+     if (thingsOrderedByDiner[0] == null){
+         screen.println("Nothing");
+     }
+     else{
+         for (int i=0; i<MAX_NUMBER_OF_THINGS_A_DINER_CAN_ORDER; i++){
+             if (thingsOrderedByDiner[i] != null){
+                 screen.println(thingsOrderedByDiner[i].toString());
+             }
+         }
+     }
+  }
+
+  //:::::::::::::Additionally required for Task 3
+
+  static void dealWithTheBill() {
+    double total = 0;
+    int individualTotal = 0;
+    int roundedTotal = 0;
+    double excess = 0;
+    for (int i=0; i<allTheDiners.length; i++){
+        total += allTheDiners[i].getShareOfBill();
+    }
+    total = total/100;
+    screen.println("The diners owe "+total);
+    screen.println("Everyone's debt rounded up is");
+    for (int i=0; i<allTheDiners.length; i++){
+        individualTotal = (int)Math.ceil((allTheDiners[i].getShareOfBill()/100));
+        screen.println(allTheDiners[i].theDinersName+" "+individualTotal);
+        roundedTotal += individualTotal;
+    }
+    excess = roundedTotal-total;
+    screen.println("which is too much by "+excess);
+  }
+
+  private double getShareOfBill() {
+    double subTotal = 0;
+    for (int i=0; i<MAX_NUMBER_OF_THINGS_A_DINER_CAN_ORDER; i++){
+        if (thingsOrderedByDiner[i] != null){
+            subTotal += thingsOrderedByDiner[i].getPriceInPence();
+        }
+    }
+    return subTotal;
+  }
+
+//:::::::::::::Additionally required for Task 4
+
+   static void getAnotherRound() {
+     for (int i=0; i<allTheDiners.length; i++){
+         String dinerName = allTheDiners[i].theDinersName;
+         int a=0;
+         //if (allTheDiners[i].thingsOrderedByDiner.length < 10)
+         for (int j=0; j<((allTheDiners[i].thingsOrderedByDiner.length)); j++){
+             if (allTheDiners[i].thingsOrderedByDiner[j] != null){
+                 a+=1;
+             }
+         }
+         
+         if (a<MAX_NUMBER_OF_THINGS_A_DINER_CAN_ORDER){
+             Order secondOrder = Order.askForANewThingOrdered(dinerName);
+             boolean firstNull = true;
+             for (int j=0; j<allTheDiners[i].thingsOrderedByDiner.length; j++){
+                 if (allTheDiners[i].thingsOrderedByDiner[j] == null && firstNull){
+                     allTheDiners[i].thingsOrderedByDiner[j] = secondOrder;
+                     firstNull = false;
+                 }
+             }
+         }
+     }
+   }
+
+}
